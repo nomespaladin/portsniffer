@@ -2,37 +2,51 @@
 import socket
 import subprocess
 
+#define function to check ip's connection
 def check_ip(ip):
     result = subprocess.run(["ping","-c 1",ip], capture_output = True, text = True)
     try:
         if "Request timed out" in result.stdout:
-            print(f"The IP '{ip}' is offline.")
+            print(f"The IP '{ip}' is Disconnected|Offline.")
         else:
-            print(f"The IP '{ip}' is online.")
+            print(f"The IP '{ip}' is Connected|Online.")
     except ConnectionAbortedError as cae:
         print(f"CRITICAL : {cae}")
-
 
 
 def sniff_port(ip,port):
     net = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     connection = net.connect_ex((ip,port))
+    
     if connection == 0:
-        print(f"Report for IP | {ip}")
         try:
             service = socket.getservbyport(port)
-            print(f"Port|{port} >> {service}")
+            
+            print(f"Report for |{ip}|Port {port}| >>{service} | Status: Open |")
         except OSError as ose:
             print(f"CRITICAL {ose}")
             #attempt to banner grabbing
-            net.send(b"TESTING PARAMS \r\n")
+            net.send(b"")
             banner = net.recv(1024)
             print(f"{banner.decode().strip()}")
     net.close()
 
-
+#main function will constantly run
 def main():
     while True:
+        print("""
+        
+
+█ ▄▄  ████▄ █▄▄▄▄    ▄▄▄▄▀ ▄▄▄▄▄    ▄   ▄█ ▄████  ▄████  ▄███▄   █▄▄▄▄ 
+█   █ █   █ █  ▄▀ ▀▀▀ █   █     ▀▄   █  ██ █▀   ▀ █▀   ▀ █▀   ▀  █  ▄▀ 
+█▀▀▀  █   █ █▀▀▌      █ ▄  ▀▀▀▀▄ ██   █ ██ █▀▀    █▀▀    ██▄▄    █▀▀▌  
+█     ▀████ █  █     █   ▀▄▄▄▄▀  █ █  █ ▐█ █      █      █▄   ▄▀ █  █  
+ █            █     ▀            █  █ █  ▐  █      █     ▀███▀     █   
+  ▀          ▀                   █   ██      ▀      ▀             ▀    
+                                                                       
+
+  -version 1.1                                          By:NomesPaladin
+        """)
         try:
             ip = input("Enter IP:")
             #ping target to check and print it's availability
@@ -45,4 +59,6 @@ def main():
             break
 
 
-main()
+if __name__ == '__main__':
+    main()
+    
